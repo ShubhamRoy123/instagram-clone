@@ -3,22 +3,22 @@ const session = require("express-session");
 const bcrypt = require('bcrypt');
 const app=express();
 
-app.use(express.urlencoded({ extended: true }));
-app.set('view engine', 'ejs');
+app.use(express.urlencoded({ extended: true }));  //this is inbuild middleware used to read data sent from HTML<form>tags.
+app.set('view engine', 'ejs');               //use EJS(embedded javaScript) template engine to render html pages.
 
 //configure session
 app.use(session({
 	secret: 'your-very-secret-key',
 	resave: false,
-	saveUninitialized: false,
-	cookie: { maxAge: 3600000 }
+	saveUninitialized: false,	//used to check not create session cookie until the user actually logs in
+	cookie: { maxAge: 3600000 }	//here is cookie time in milli second
 }));
 
 const user = [];
 
 //Middleware to protect routes
 const redirectLogin = (req, res, next) => {
-	if (!req.session.userId) {
+	if (!req.session.userId) {	//checking user present or not
 		res.redirect('/login');
 	}else{
 		next();
@@ -33,7 +33,7 @@ app.get('/',(req, res) => {
 
 //Register
 app.post('/register', async (req, res) => {
-	const hashedPassword = await bcrypt.hash(req.body.password,10);
+	const hashedPassword = await bcrypt.hash(req.body.password,10);		//convert password to hash
 	user.push({
 		id: Date.now(),
 		email: req.body.email,
